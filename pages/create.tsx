@@ -387,8 +387,10 @@ export default function Create() {
                     fontFamily: "'Montserrat', 'Poppins', sans-serif"
                   }}
                 >
-                  🎉 This is how your card will look!<br />
-                  You can go back to edit any step<br /> or continue to The Last Preview.
+                  🎉🎉🎉<br /> 
+                  This is how your card will look!<br />
+                  You can go back to edit any step<br /> 
+                  or continue to The Last Preview.
                 </p>
               </FadeIn>
             )}
@@ -454,7 +456,7 @@ export default function Create() {
                 }}
                 onClick={handlePreview}
               >
-                Continue to Preview
+                Preview
               </button>
             )}
           </div>
