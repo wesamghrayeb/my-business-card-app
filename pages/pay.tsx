@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
 import BusinessCard from "../components/BusinessCard";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../lib/firebase";
-import { Timestamp } from "firebase/firestore";
 
 type CardForm = {
   logo: string;
@@ -37,57 +34,58 @@ export default function Pay() {
     if (saved) setForm(JSON.parse(saved));
   }, []);
 
-  const whatsappLink =
-    "https://wa.me/972585291291?text=Hi,%20I%20just%20completed%20my%20digital%20business%20card.%20Can%20I%20get%20my%20unique%20link?";
+  function validateCardForm(form: CardForm): string[] {
+    const errors = [];
+    if (!form.businessName || form.businessName.trim().length < 2) {
+      errors.push("Business name is required.");
+    }
+    if (!form.address || form.address.trim().length < 3) {
+      errors.push("Address is required.");
+    }
+    if (!form.phone || !/^05\d{8}$/.test(form.phone.trim())) {
+      errors.push("Valid Israeli phone number is required.");
+    }
+    if (!form.about || form.about.trim().length < 10) {
+      errors.push("About section should be at least 10 characters.");
+    }
+    // Add more rules if needed
+    return errors;
+  }
 
   const handleContactAndSave = async () => {
-      if (!form) return;
+    if (!form) return;
 
-      const validationErrors = validateCardForm(form);
-      if (validationErrors.length > 0) {
-        setErrors(validationErrors);
-        alert("You have to fill all the fields allright.");
-
-        return; // Do not save if errors!
-      }
-        setErrors([]);
+    const validationErrors = validateCardForm(form);
+    if (validationErrors.length > 0) {
+      setErrors(validationErrors);
+      alert("You have to fill all the fields allright.");
+      return; // Do not send if errors!
+    }
+    setErrors([]);
     setLoading(true);
 
-    // Generate slug (unique card path)
-    const slug = slugify(form.businessName || "my-card");
+    // Build WhatsApp message text
+    const message =
+      `Hi, I just completed my digital business card! Here are my details:\n\n` +
+      `Business Name: ${form.businessName}\n` +
+      `Address: ${form.address}\n` +
+      `About: ${form.about}\n` +
+      `Experience: ${form.experience}\n` +
+      `Phone: ${form.phone}\n` +
+      (form.instagram ? `Instagram: ${form.instagram}\n` : '') +
+      (form.whatsapp ? `WhatsApp: ${form.whatsapp}\n` : '') +
+      (form.tiktok ? `TikTok: ${form.tiktok}\n` : '') +
+      (form.waze ? `Waze: ${form.waze}\n` : '') +
+      `Working Hours: ${form.workingHours}\n` +
+      `Services: ${form.services}\n\n` +
+      `Logo: Please find my business logo image attached here in chat.\n`;
 
-    try {
-      await addDoc(collection(db, "cards"), {
-        ...form,
-        slug,
-        createdAt: Timestamp.now()
-      });
-    } catch (err) {
-      alert("Could not save card to database.");
-      setLoading(false);
-      return;
-    }
-    // Redirect to WhatsApp
-    window.open(whatsappLink, "_blank");
+    // WhatsApp API format: https://wa.me/<number>?text=<message>
+    const whatsappUrl = `https://wa.me/972585291291?text=${encodeURIComponent(message)}`;
+
+    window.open(whatsappUrl, "_blank");
     setLoading(false);
   };
-  function validateCardForm(form: CardForm): string[] {
-  const errors = [];
-  if (!form.businessName || form.businessName.trim().length < 2) {
-    errors.push("Business name is required.");
-  }
-  if (!form.address || form.address.trim().length < 3) {
-    errors.push("Address is required.");
-  }
-  if (!form.phone || !/^05\d{8}$/.test(form.phone.trim())) {
-    errors.push("Valid Israeli phone number is required.");
-  }
-  if (!form.about || form.about.trim().length < 10) {
-    errors.push("About section should be at least 10 characters.");
-  }
-  // Add more rules if needed
-  return errors;
-}
 
   return (
     <div
@@ -152,8 +150,7 @@ export default function Pay() {
                   fontSize: "1.17rem",
                   fontWeight: 800,
                   marginTop: 14,
-                  background:
-                    "linear-gradient(95deg,#25d366 0%,#6befff 100%)",
+                  background: "linear-gradient(95deg,#25d366 0%,#6befff 100%)",
                   color: "#0e232a",
                   border: "none",
                   borderRadius: 11,
@@ -191,6 +188,10 @@ export default function Pay() {
                 }}
               >
                 Complete your business card and <b>contact us</b> to receive your personal link!
+                <br />
+                <span style={{ color: "#fff", fontSize: "0.97em" }}>
+                  <b>Note:</b> Please attach your logo image in the WhatsApp chat after clicking the button.
+                </span>
               </p>
             </div>
           </>
