@@ -382,7 +382,7 @@ export default function Create() {
                   }}
                 >
                   🎉 This is how your card will look!<br />
-                  You can go back to edit any step or continue to payment.
+                  You can go back to edit any step<br/> or continue to The Last Preview.
                 </p>
               </FadeIn>
             )}
