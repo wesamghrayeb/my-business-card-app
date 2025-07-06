@@ -16,18 +16,12 @@ type CardForm = {
   services: string;
 };
 
-function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/--+/g, "-");
-}
-
 export default function Pay() {
   const [form, setForm] = useState<CardForm | null>(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [waUrl, setWaUrl] = useState<string>("");
 
   useEffect(() => {
     const saved = localStorage.getItem("cardForm");
@@ -52,14 +46,14 @@ export default function Pay() {
     return errors;
   }
 
-  const handleContactAndSave = async () => {
+  const handleContactAndSave = () => {
     if (!form) return;
 
     const validationErrors = validateCardForm(form);
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
       alert("You have to fill all the fields allright.");
-      return; // Do not send if errors!
+      return;
     }
     setErrors([]);
     setLoading(true);
@@ -78,13 +72,19 @@ export default function Pay() {
       (form.waze ? `Waze: ${form.waze}\n` : '') +
       `Working Hours: ${form.workingHours}\n` +
       `Services: ${form.services}\n\n` +
-      `Logo: Please find my business logo image attached here in chat.\n`;
+      `Logo: (Please upload/attach your logo image as a file in this chat)\n`;
 
-    // WhatsApp API format: https://wa.me/<number>?text=<message>
     const whatsappUrl = `https://wa.me/972585291291?text=${encodeURIComponent(message)}`;
-
-    window.open(whatsappUrl, "_blank");
+    setWaUrl(whatsappUrl);
+    setShowModal(true);
     setLoading(false);
+  };
+
+  const handleModalConfirm = () => {
+    setShowModal(false);
+    if (waUrl) {
+      window.open(waUrl, "_blank");
+    }
   };
 
   return (
@@ -195,6 +195,56 @@ export default function Pay() {
               </p>
             </div>
           </>
+        )}
+
+        {/* Modal for WhatsApp reminder */}
+        {showModal && (
+          <div
+            style={{
+              position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+              background: "rgba(0,0,0,0.64)", zIndex: 99, display: "flex",
+              alignItems: "center", justifyContent: "center"
+            }}
+            onClick={handleModalConfirm}
+          >
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 13,
+                padding: "2.2rem 2.5rem",
+                maxWidth: 370,
+                textAlign: "center",
+                boxShadow: "0 2px 20px #0004",
+                position: "relative"
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div style={{ marginBottom: 22 }}>
+                <span role="img" aria-label="Attach" style={{ fontSize: 48 }}>📎</span>
+              </div>
+              <h2 style={{ color: "#00ccff", fontSize: "1.25rem", marginBottom: 15, fontWeight: 700 }}>
+                Don't Forget Your Logo!
+              </h2>
+              <p style={{ color: "#0e232a", marginBottom: 14, fontSize: "1.07rem" }}>
+                Please click the paperclip (<b>📎</b>) in WhatsApp and attach your logo image as a file in the chat so we can build your card!
+              </p>
+              <button
+                onClick={handleModalConfirm}
+                style={{
+                  background: "linear-gradient(95deg,#25d366 0%,#6befff 100%)",
+                  color: "#0e232a",
+                  fontWeight: 800,
+                  border: "none",
+                  borderRadius: 10,
+                  padding: "0.73em 2em",
+                  marginTop: 6,
+                  cursor: "pointer"
+                }}
+              >
+                Got it!
+              </button>
+            </div>
+          </div>
         )}
         <style>{`
           .card-glow { animation: fadein .7s; }
