@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import BusinessCard from "../components/BusinessCard";
-
-// --- Font Imports for Montserrat & Poppins (add to _app or _document if not global!) ---
 import Head from "next/head";
 
 const INITIAL_STATE = {
@@ -62,6 +60,17 @@ export default function Create() {
     window.location.href = "/pay";
   };
 
+  // --- Required checks for each step
+  const requiredChecks = [
+    !!form.logo,                            // Logo required
+    form.businessName.trim().length > 0,    // Business Name required
+    form.address.trim().length > 0,         // Address required
+    form.about.trim().length > 0,           // About required
+    form.experience.trim().length > 0,      // Experience required
+    form.phone.trim().length > 0,           // Phone required
+    form.workingHours.trim().length > 0 && form.services.trim().length > 0 // Both required
+  ];
+
   return (
     <>
       {/* Fonts for Montserrat, Poppins, Inter */}
@@ -90,7 +99,6 @@ export default function Create() {
           font-weight: 800;
           letter-spacing: 0.03em;
         }
-        /* Progress bar style */
         .progress.is-info::-webkit-progress-bar {
           background-color: #232323;
           border-radius: 4px;
@@ -105,7 +113,6 @@ export default function Create() {
           height: 7px !important;
           border-radius: 4px;
         }
-        /* Remove default outline for buttons and inputs */
         .input:focus, .textarea:focus, .button:focus {
           outline: none !important;
           box-shadow: 0 0 0 2px #ff980030 !important;
@@ -127,8 +134,7 @@ export default function Create() {
           style={{
             background: "#161616",
             borderRadius: 26,
-            boxShadow:
-              "0 9px 44px #ff950040, 0 1.5px 18px #000b, 0 0px 0px #ff880040 inset",
+            boxShadow: "0 9px 44px #ff950040, 0 1.5px 18px #000b, 0 0px 0px #ff880040 inset",
             maxWidth: 440,
             width: "97vw",
             margin: "2rem auto",
@@ -169,7 +175,7 @@ export default function Create() {
             {step === 0 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  Upload Logo
+                  Upload Logo <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   type="file"
@@ -199,7 +205,7 @@ export default function Create() {
             {step === 1 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  Business Name
+                  Business Name <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   name="businessName"
@@ -215,7 +221,7 @@ export default function Create() {
             {step === 2 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  Address
+                  Address <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   name="address"
@@ -230,7 +236,7 @@ export default function Create() {
             {step === 3 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  About Me
+                  About Me <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <textarea
                   name="about"
@@ -245,7 +251,7 @@ export default function Create() {
             {step === 4 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  Experience
+                  Experience <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   name="experience"
@@ -260,7 +266,7 @@ export default function Create() {
             {step === 5 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  Phone
+                  Phone <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   name="phone"
@@ -319,7 +325,7 @@ export default function Create() {
             {step === 6 && (
               <FadeIn>
                 <label className="label" style={labelStyle}>
-                  Working Hours
+                  Working Hours <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   name="workingHours"
@@ -330,7 +336,7 @@ export default function Create() {
                   placeholder="e.g. Mon-Sat: 10:00–20:00"
                 />
                 <label className="label mt-3" style={labelStyle}>
-                  Services
+                  Services <span style={{ color: '#ff9800' }}>*</span>
                 </label>
                 <input
                   name="services"
@@ -368,9 +374,9 @@ export default function Create() {
                     margin: "1.4rem 0 0 0",
                   }}
                 >
-                              <div style={{ marginBottom: 36 }}>
-              <BusinessCard {...form} />
-            </div>
+                  <div style={{ marginBottom: 36 }}>
+                    <BusinessCard {...form} />
+                  </div>
                 </div>
                 <p
                   className="help has-text-info mt-4"
@@ -382,7 +388,7 @@ export default function Create() {
                   }}
                 >
                   🎉 This is how your card will look!<br />
-                  You can go back to edit any step<br/> or continue to The Last Preview.
+                  You can go back to edit any step<br /> or continue to The Last Preview.
                 </p>
               </FadeIn>
             )}
@@ -429,10 +435,7 @@ export default function Create() {
                   boxShadow: "0 3px 14px #ffb86644",
                 }}
                 onClick={next}
-                disabled={
-                  (step === 0 && !form.logo) ||
-                  (step === 1 && !form.businessName)
-                }
+                disabled={!requiredChecks[step]}
               >
                 Next
               </button>
