@@ -207,7 +207,7 @@ export default function Create() {
                   value={form.businessName}
                   onChange={handleChange}
                   style={inputStyle}
-                  placeholder="e.g. JAN SHUKHA BARBERSHOP"
+                  placeholder="e.g. BUSINESS TOGETHER"
                   autoFocus
                 />
               </FadeIn>
@@ -223,7 +223,7 @@ export default function Create() {
                   value={form.address}
                   onChange={handleChange}
                   style={inputStyle}
-                  placeholder="e.g. 5002 Nazareth Hagalil, Israel"
+                  placeholder="e.g. Tel-Aviv, Israel"
                 />
               </FadeIn>
             )}
@@ -268,7 +268,7 @@ export default function Create() {
                   value={form.phone}
                   onChange={handleChange}
                   style={inputStyle}
-                  placeholder="e.g. 052-4852854"
+                  placeholder="e.g. 050-1234567"
                 />
                 <label className="label mt-3" style={labelStyle}>
                   Instagram (URL)
@@ -290,7 +290,7 @@ export default function Create() {
                   value={form.whatsapp}
                   onChange={handleChange}
                   style={inputStyle}
-                  placeholder="e.g. 972524852854"
+                  placeholder="e.g. 972501234567"
                 />
                 <label className="label mt-3" style={labelStyle}>
                   TikTok (URL)
@@ -338,7 +338,7 @@ export default function Create() {
                   value={form.services}
                   onChange={handleChange}
                   style={inputStyle}
-                  placeholder="e.g. Haircut • Beard Trim • Styling"
+                  placeholder="e.g. Service 1 • Service 2 • Service 3"
                 />
               </FadeIn>
             )}
